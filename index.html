@@ -216,8 +216,19 @@ function parseESPNLog(d,market){
   const groupName=String(cat?.displayName||cat?.name||cat?.type||'');
   for(const def of defs){
    const group=String(def.group||groupName);
-   if(!spec.group.test(group))continue;
-   for(let i=0;i<def.names.length;i++)if(aliases.has(norm(def.names[i])))return {i,group};
+   for(let i=0;i<def.names.length;i++){
+    const field=norm(def.names[i]);
+    if(!aliases.has(field))continue;
+    // ESPN's gamelog uses flat top-level arrays of stat names and labels
+    // (15 entries) with no receiving/rushing/passing group name.
+    // Accept explicit names such as receivingYards, but never an ambiguous
+    // standalone YDS or TD without category context.
+    const explicit=field.startsWith('receiv')||field.startsWith('rush')||
+      field.startsWith('pass')||field.startsWith('recyd')||
+      field.startsWith('rushyd')||field.startsWith('passtd')||
+      field==='receptions'||field==='totaltouchdowns';
+    if(spec.group.test(group)||explicit)return {i,group:group||'ESPN stat names'};
+   }
   }
   // A nested group may supply its own stat labels alongside each game row.
   for(const block of arr(entry?.categories)){
