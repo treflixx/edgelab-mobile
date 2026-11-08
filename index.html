@@ -156,7 +156,7 @@ function researchConfidence(logs,peerBooks,market){
  return {label,reasons};
 }
 function researchPriceContext(x){
- const odds=Number(x.pick.price),implied=Number.isFinite(odds)&&Math.abs(odds)>=100?100/dec(odds):null;
+ const odds=Number(x.pick.price),implied=Number.isFinite(odds)&&Math.abs(odds)>=100?1/dec(odds):null;
  const consensus=Number(x.p),ev=Number(x.lowEV);
  const fmt=n=>Number.isFinite(n)?(100*n).toFixed(1)+'%':'Unavailable';
  return `FanDuel ${odds>0?'+':''}${odds} · break-even ${fmt(implied)} · peer consensus ${fmt(consensus)} · buffered market EV ${fmt(ev)} (market-based only)`;
